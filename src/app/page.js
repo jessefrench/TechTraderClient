@@ -1,31 +1,31 @@
 'use client';
 
- // any component that uses useAuth needs this because if a component directly imports useAuth, it needs to be a client component since useAuth uses React hooks.
+import { useEffect, useState } from 'react';
+import ListingCard from '../components/ListingCard';
+import getAllListings from '../api/listingData';
 
-import { Button } from 'react-bootstrap';
-import { signOut } from '@/utils/auth'; // anything in the src dir, you can use the @ instead of relative paths
-import { useAuth } from '@/utils/context/authContext';
+export default function Home() {
+  const [listings, setListings] = useState([]);
 
-function Home() {
-  const { user } = useAuth();
+  const getListings = () => {
+    getAllListings().then(setListings);
+  };
+
+  useEffect(() => {
+    getListings();
+  }, []);
 
   return (
-    <div
-      className="text-center d-flex flex-column justify-content-center align-content-center"
-      style={{
-        height: '90vh',
-        padding: '30px',
-        maxWidth: '400px',
-        margin: '0 auto',
-      }}
-    >
-      <h1>Hello {user.displayName}! </h1>
-      <p>Click the button below to logout!</p>
-      <Button variant="danger" type="button" size="lg" className="copy-btn" onClick={signOut}>
-        Sign Out
-      </Button>
+    <div className="d-flex justify-content-center align-items-center vh-100">
+      <div className="container">
+        <div className="row">
+          {listings.map((listing) => (
+            <div key={listing.id} className="col-12 col-md-6 col-lg-4 mb-4">
+              <ListingCard listing={listing} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
-
-export default Home;
