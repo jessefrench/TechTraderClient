@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ListingCard from '../components/ListingCard';
-import getAllListings from '../api/listingData';
+import { getAllListings } from '../api/listingData';
 
 export default function Home() {
   const [listings, setListings] = useState([]);
