@@ -1,25 +1,14 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
 import { signIn } from '../utils/auth';
 
-function Signin() {
+export default function Signin() {
   return (
-    <div
-      className="text-center d-flex flex-column justify-content-center align-content-center"
-      style={{
-        height: '90vh',
-        padding: '30px',
-        maxWidth: '400px',
-        margin: '0 auto',
-      }}
-    >
-      <h1>Hi there!</h1>
-      <p>Click the button below to login!</p>
-      <Button type="button" size="lg" className="copy-btn" onClick={signIn}>
-        Sign In
-      </Button>
+    <div className="flex flex-col items-center justify-center h-[90vh] px-8 max-w-sm mx-auto text-center">
+      <h1 className="text-2xl font-bold">Hi there!</h1>
+      <p className="mt-4">Click the button below to login!</p>
+      <button type="button" className="btn btn-primary mt-6" onClick={signIn}>
+        Login
+      </button>
     </div>
   );
 }
-
-export default Signin;
