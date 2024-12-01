@@ -15,4 +15,17 @@ const getAllListings = () =>
       .catch(reject);
   });
 
-export default getAllListings;
+const getListingById = (id) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { getAllListings, getListingById };
