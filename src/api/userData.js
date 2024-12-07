@@ -12,15 +12,12 @@ const checkUser = (uid) =>
     })
       .then((response) => {
         if (response.ok) {
-          return response.json();
+          resolve(response.json());
+        } else {
+          resolve({});
         }
-        if (response.status === 404) {
-          throw new Error('User not found');
-        }
-        throw new Error('Unexpected error');
       })
-      .then((data) => resolve(data))
-      .catch((error) => reject(error));
+      .catch(reject);
   });
 
 const registerUser = (userInfo) =>
@@ -37,4 +34,18 @@ const registerUser = (userInfo) =>
       .catch(reject);
   });
 
-export { checkUser, registerUser };
+const editUser = (payload) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/users/${payload.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { checkUser, registerUser, editUser };

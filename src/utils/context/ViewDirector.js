@@ -3,26 +3,27 @@ import { useAuth } from '@/utils/context/authContext';
 import Loading from '@/components/Loading';
 import SignIn from '@/components/SignIn';
 import NavBar from '@/components/NavBar';
-import { useRouter } from 'next/navigation';
+import RegisterForm from '../../components/RegisterForm';
 
-function ViewDirectorBasedOnUserAuthStatus({ children }) {
-  const { user, userLoading, registrationComplete } = useAuth();
-  const router = useRouter();
+export default function ViewDirectorBasedOnUserAuthStatus({ children }) {
+  const { user, userLoading, updateUser } = useAuth();
 
   // if user state is null, then show loader
   if (userLoading) {
     return <Loading />;
   }
 
-  // what the user should see if they are logged in
-  if (user) {
-    // Redirect to the registration page if the user hasn't completed registration
-    if (!registrationComplete) {
-      router.push('/register'); // Ensure this matches your registration page route
-      return null; // Avoid rendering anything during the redirect
-    }
+  // if user is logged in but not registered, show RegisterForm
+  if (user && !user.id) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-base-200">
+        <RegisterForm user={user} updateUser={updateUser} />
+      </div>
+    );
+  }
 
-    // Render authenticated user view
+  // if user is fully registered, show NavBar and the rest of the app
+  if (user && user.id) {
     return (
       <>
         <NavBar />
@@ -31,11 +32,9 @@ function ViewDirectorBasedOnUserAuthStatus({ children }) {
     );
   }
 
-  // Render the sign-in view for unauthenticated users
+  // if not logged in, show SignIn
   return <SignIn />;
 }
-
-export default ViewDirectorBasedOnUserAuthStatus;
 
 ViewDirectorBasedOnUserAuthStatus.propTypes = {
   children: PropTypes.node.isRequired,

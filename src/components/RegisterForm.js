@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { registerUser } from '../api/userData';
-import { useAuth } from '../utils/context/authContext';
+import { editUser, registerUser } from '../api/userData';
 
-const initalState = {
+const initialState = {
   firstName: '',
   lastName: '',
   email: '',
@@ -16,11 +16,27 @@ const initalState = {
   isSeller: false,
 };
 
-export default function RegisterForm() {
-  const [formData, setFormData] = useState({ initalState });
-  const { setRegistrationComplete } = useAuth();
-  const { user } = useAuth();
+export default function RegisterForm({ user, updateUser }) {
+  const [formData, setFormData] = useState({ ...initialState, uid: user.uid });
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        id: user.id,
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        imageUrl: user.imageUrl || '',
+        email: user.email || '',
+        city: user.city || '',
+        state: user.state || '',
+        zip: user.zip || '',
+        isSeller: user.isSeller || false,
+        uid: user.uid || '',
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,16 +46,20 @@ export default function RegisterForm() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const createRegisteredUser = () => {
-      const payload = { ...formData, uid: user.uid };
-      registerUser(payload).then(() => {
-        setRegistrationComplete(true);
+    try {
+      if (user.id) {
+        await editUser(formData);
+        await updateUser(user.uid);
         router.push('/');
-      });
-    };
-    createRegisteredUser();
+      } else {
+        await registerUser(formData);
+        await updateUser(user.uid);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (
@@ -47,28 +67,28 @@ export default function RegisterForm() {
       <div className="form-control w-full max-w-xs space-y-4">
         <h1>Register</h1>
 
-        {/* first name */}
+        {/* First Name */}
         <input type="text" placeholder="First name" className="input input-bordered w-full max-w-xs" name="firstName" value={formData.firstName} onChange={handleChange} required />
 
-        {/* last name */}
+        {/* Last Name */}
         <input type="text" placeholder="Last name" className="input input-bordered w-full max-w-xs" name="lastName" value={formData.lastName} onChange={handleChange} required />
 
-        {/* email */}
-        <input type="text" placeholder="Email" className="input input-bordered w-full max-w-xs" name="email" value={formData.email} onChange={handleChange} required />
+        {/* Email */}
+        <input type="email" placeholder="Email" className="input input-bordered w-full max-w-xs" name="email" value={formData.email} onChange={handleChange} required />
 
-        {/* image */}
+        {/* Image URL */}
         <input type="url" placeholder="Image URL" className="input input-bordered w-full max-w-xs" name="imageUrl" value={formData.imageUrl} onChange={handleChange} required />
 
-        {/* city */}
+        {/* City */}
         <input type="text" placeholder="City" className="input input-bordered w-full max-w-xs" name="city" value={formData.city} onChange={handleChange} required />
 
-        {/* state */}
+        {/* State */}
         <input type="text" placeholder="State" className="input input-bordered w-full max-w-xs" name="state" value={formData.state} onChange={handleChange} required />
 
-        {/* zip */}
+        {/* ZIP */}
         <input type="text" placeholder="ZIP" className="input input-bordered w-full max-w-xs" name="zip" value={formData.zip} onChange={handleChange} required />
 
-        {/* isSeller */}
+        {/* Is Seller */}
         <label className="label cursor-pointer">
           <span className="label-text">Register as seller?</span>
           <input
@@ -76,12 +96,12 @@ export default function RegisterForm() {
             className="checkbox"
             name="isSeller"
             checked={formData.isSeller}
-            onChange={(e) => {
+            onChange={(e) =>
               setFormData((prevState) => ({
                 ...prevState,
                 isSeller: e.target.checked,
-              }));
-            }}
+              }))
+            }
           />
         </label>
 
@@ -92,3 +112,19 @@ export default function RegisterForm() {
     </form>
   );
 }
+
+RegisterForm.propTypes = {
+  user: PropTypes.shape({
+    id: PropTypes.number,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    email: PropTypes.string,
+    imageUrl: PropTypes.string,
+    city: PropTypes.string,
+    state: PropTypes.string,
+    zip: PropTypes.string,
+    isSeller: PropTypes.bool,
+    uid: PropTypes.string.isRequired,
+  }).isRequired,
+  updateUser: PropTypes.func.isRequired,
+};

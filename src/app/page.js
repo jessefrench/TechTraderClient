@@ -1,33 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import ListingCard from '../components/ListingCard';
 import { getAllListings } from '../api/listingData';
-import { checkUser } from '../api/userData';
-import { useAuth } from '../utils/context/authContext';
 
 export default function Home() {
-  const { user } = useAuth();
-  const router = useRouter();
   const [listings, setListings] = useState([]);
-
-  const handleRegistration = () => {
-    checkUser(user.uid).then((backendUser) => {
-      console.warn('backend user response', backendUser);
-      if (!backendUser) {
-        router.push('/register');
-      } else {
-        router.push('/');
-      }
-    });
-  };
-
-  useEffect(() => {
-    if (user.uid) {
-      handleRegistration();
-    }
-  }, [user]);
 
   const getListings = () => {
     getAllListings().then(setListings);
