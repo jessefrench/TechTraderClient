@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+
 'use client';
 
 import React from 'react';
@@ -13,6 +15,9 @@ export default function NavBar() {
       <div className="flex-1">
         <Link passHref href="/">
           <p className="btn btn-ghost text-xl">TechTrader</p>
+        </Link>
+        <Link passHref href="/listings/new">
+          <p className="btn btn-ghost text-xl">Create Listing</p>
         </Link>
       </div>
       <div className="flex-none gap-2">

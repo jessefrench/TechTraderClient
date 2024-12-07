@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import ListingDetails from '../../../components/ListingDetails';
 import { getListingById } from '../../../api/listingData';
