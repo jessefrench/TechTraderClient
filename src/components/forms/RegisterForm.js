@@ -3,7 +3,7 @@
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { editUser, registerUser } from '../api/userData';
+import { editUser, registerUser } from '../../api/userData';
 
 const initialState = {
   firstName: '',

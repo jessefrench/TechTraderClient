@@ -28,4 +28,44 @@ const getListingById = (id) =>
       .catch(reject);
   });
 
-export { getAllListings, getListingById };
+const createListing = (payload) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+const updateListing = (listingId, payload) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings/${listingId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+const deleteListing = (listingId) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings/${listingId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { getAllListings, getListingById, createListing, updateListing, deleteListing };

@@ -3,7 +3,7 @@ import { useAuth } from '@/utils/context/authContext';
 import Loading from '@/components/Loading';
 import SignIn from '@/components/SignIn';
 import NavBar from '@/components/NavBar';
-import RegisterForm from '../../components/RegisterForm';
+import RegisterForm from '../../components/forms/RegisterForm';
 
 export default function ViewDirectorBasedOnUserAuthStatus({ children }) {
   const { user, userLoading, updateUser } = useAuth();
