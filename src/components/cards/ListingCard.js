@@ -21,7 +21,7 @@ export default function ListingCard({ listing, onUpdate }) {
   };
 
   return (
-    <div className="card bg-base-100 w-96 shadow-xl">
+    <div className="card bg-base-100 w-85 shadow-xl">
       <figure>
         <img src={listing.imageUrl} alt={listing.name} style={{ width: '400px', height: '300px' }} />
       </figure>
