@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import PropTypes from 'prop-types';
 import React from 'react';
+import Link from 'next/link';
 import Loading from './Loading';
 
 export default function ListingDetails({ listing }) {
@@ -28,9 +29,11 @@ export default function ListingDetails({ listing }) {
         </div>
         <p>{listing.description}</p>
         <div className="card-actions">
-          <button type="button" className="btn btn-primary">
-            Message Seller
-          </button>
+          <Link href={`/messages/new?receiverId=${listing.seller.id}&listingId=${listing.id}`}>
+            <button type="button" className="btn btn-primary">
+              Message Seller
+            </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -45,6 +48,7 @@ ListingDetails.propTypes = {
     price: PropTypes.number,
     imageUrl: PropTypes.string,
     seller: PropTypes.shape({
+      id: PropTypes.number,
       firstName: PropTypes.string,
       lastName: PropTypes.string,
       city: PropTypes.string,
