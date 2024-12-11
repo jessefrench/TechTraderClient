@@ -48,4 +48,17 @@ const editUser = (payload) =>
       .catch(reject);
   });
 
-export { checkUser, registerUser, editUser };
+const getUserById = (userId) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { checkUser, registerUser, editUser, getUserById };

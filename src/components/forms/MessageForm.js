@@ -3,19 +3,14 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../utils/context/authContext';
 import { createMessage, updateMessage } from '../../api/messageData';
 
-export default function MessageForm({ message = { id: null, senderId: null, receiverId: null, listingId: null, content: '', sentAt: '' }, params, onUpdate }) {
+export default function MessageForm({ message, params, onUpdate }) {
   const { user } = useAuth();
   const { receiverId } = params;
-
-  // Initialize formInput with default structure
-  const [formInput, setFormInput] = useState({
-    message: '',
-  });
+  const { listingId } = params;
+  const [formInput, setFormInput] = useState({});
 
   useEffect(() => {
-    if (message) {
-      setFormInput(message);
-    }
+    setFormInput(message);
   }, [message]);
 
   const handleChange = (e) => {
@@ -31,9 +26,10 @@ export default function MessageForm({ message = { id: null, senderId: null, rece
     e.preventDefault();
     const payload = {
       ...formInput,
-      receiverId: parseInt(receiverId, 10),
+      receiverId,
       senderId: user.id,
-      sentAt: new Date().toUTCString(),
+      listingId,
+      sentAt: new Date(),
     };
 
     if (message?.id) {
@@ -47,7 +43,7 @@ export default function MessageForm({ message = { id: null, senderId: null, rece
     <form className="pop-font text-white flex items-center justify-end" onSubmit={handleSubmit}>
       <div className="message-form flex items-start p-2 md:p-4 w-full">
         <div className="flex-grow mb-0 mr-1">
-          <input type="text" className="input input-bordered w-full rounded-full px-4 py-2 font-light" placeholder="Type your message here..." name="message" value={formInput.message || ''} onChange={handleChange} autoComplete="off" />
+          <input type="text" className="input input-bordered w-full rounded-full px-4 py-2 font-light" placeholder="Type your message here..." name="content" value={formInput.content || ''} onChange={handleChange} autoComplete="off" />
         </div>
         <button type="submit" className="btn btn-primary font-light rounded-full">
           Send
@@ -64,10 +60,11 @@ MessageForm.propTypes = {
     receiverId: PropTypes.number,
     listingId: PropTypes.number,
     content: PropTypes.string,
-    sentAt: PropTypes.string, // Updated to string type
+    sentAt: PropTypes.string,
   }),
   params: PropTypes.shape({
-    receiverId: PropTypes.number.isRequired,
+    receiverId: PropTypes.number,
+    listingId: PropTypes.number,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
