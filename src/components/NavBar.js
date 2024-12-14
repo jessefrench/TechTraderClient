@@ -19,6 +19,9 @@ export default function NavBar() {
         <Link passHref href="/listings/new">
           <p className="btn btn-ghost text-xl">Create Listing</p>
         </Link>
+        <Link passHref href="/messages">
+          <p className="btn btn-ghost text-xl">Messages</p>
+        </Link>
       </div>
       <div className="flex-none gap-2">
         <div className="form-control">
