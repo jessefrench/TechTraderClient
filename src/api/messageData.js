@@ -41,6 +41,19 @@ const getMessagesByListingId = (userId, listingId) =>
       .catch(reject);
   });
 
+const getLatestMessages = (userId) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/messages/latest/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
 const createMessage = (payload) =>
   new Promise((resolve, reject) => {
     fetch(`${endpoint}/messages`, {
@@ -69,4 +82,4 @@ const updateMessage = (messageId, payload) =>
       .catch(reject);
   });
 
-export { getMessagesByUserId, getMessagesBySellerId, getMessagesByListingId, createMessage, updateMessage };
+export { getMessagesByUserId, getMessagesBySellerId, getMessagesByListingId, getLatestMessages, createMessage, updateMessage };
