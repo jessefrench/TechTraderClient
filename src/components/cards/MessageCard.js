@@ -1,29 +1,28 @@
-'use client';
+import PropTypes from 'prop-types';
 
-import { useEffect, useState } from 'react';
-import { getLatestMessages } from '../../api/messageData';
-import { useAuth } from '../../utils/context/authContext';
-
-export default function MessageCard() {
-  const [messages, setMessages] = useState([]);
-  const { user } = useAuth();
-
-  useEffect(() => {
-    getLatestMessages(user.id).then(setMessages);
-  }, [user.id]);
-
+export default function MessageCard({ message }) {
   return (
-    <>
-      {messages.map((message) => (
-        <div className="card bg-primary text-primary-content w-96 shadow-xl mb-1">
-          <div className="card-body">
-            <h2 className="card-title">
-              {message.listing.seller.firstName} {message.listing.seller.lastName}
-            </h2>
-            <p>{message.content}</p>
-          </div>
-        </div>
-      ))}
-    </>
+    <div className="card bg-primary text-primary-content w-96 shadow-xl mb-1">
+      <div className="card-body">
+        <h2 className="card-title">
+          {message.listing.seller.firstName} {message.listing.seller.lastName}
+        </h2>
+        <div className="badge badge-outline">{message.listing.name}</div>
+        <p>{message.content}</p>
+      </div>
+    </div>
   );
 }
+
+MessageCard.propTypes = {
+  message: PropTypes.shape({
+    content: PropTypes.string,
+    listing: PropTypes.shape({
+      name: PropTypes.string,
+      seller: PropTypes.shape({
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+      }),
+    }),
+  }),
+};
