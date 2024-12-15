@@ -1,4 +1,3 @@
-import React from 'react';
 import { signIn } from '../utils/auth';
 
 export default function Signin() {

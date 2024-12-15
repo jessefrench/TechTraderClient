@@ -2,7 +2,6 @@
 
 'use client';
 
-import React from 'react';
 import { useAuth } from '@/utils/context/authContext';
 import Link from 'next/link';
 import { signOut } from '../utils/auth';
@@ -16,13 +15,16 @@ export default function NavBar() {
         <Link passHref href="/">
           <p className="btn btn-ghost text-xl">TechTrader</p>
         </Link>
-        <Link passHref href="/listings/new">
-          <p className="btn btn-ghost text-xl">Create Listing</p>
+        <Link passHref href="/">
+          <p className="btn btn-ghost text-xl">Listings</p>
         </Link>
         <Link passHref href="/messages">
           <p className="btn btn-ghost text-xl">Messages</p>
         </Link>
       </div>
+      <Link passHref href="/listings/new">
+        <p className="btn btn-ghost text-xl">+ New Listing</p>
+      </Link>
       <div className="flex-none gap-2">
         <div className="form-control">
           <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />

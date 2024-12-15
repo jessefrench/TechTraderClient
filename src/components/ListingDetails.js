@@ -1,7 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
-import React from 'react';
 import Loading from './Loading';
 
 export default function ListingDetails({ listing }) {
