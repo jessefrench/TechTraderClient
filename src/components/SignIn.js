@@ -1,13 +1,19 @@
+/* eslint-disable @next/next/no-img-element */
 import { signIn } from '../utils/auth';
 
 export default function Signin() {
   return (
-    <div className="flex flex-col items-center justify-center h-[90vh] px-8 max-w-sm mx-auto text-center">
-      <h1 className="text-2xl font-bold">Hi there!</h1>
-      <p className="mt-4">Click the button below to login!</p>
-      <button type="button" className="btn btn-primary mt-6" onClick={signIn}>
-        Login
-      </button>
+    <div className="hero bg-base-200 min-h-screen">
+      <div className="hero-content flex-col lg:flex-row">
+        <img className="max-w-sm rounded-lg" src="/images/logo.png" alt="logo" style={{ width: '250px', height: '250px' }} />
+        <div className="max-w-md">
+          <h1 className="text-7xl font-bold">TechTrader</h1>
+          <p className="py-6">A friendly marketplace for tech lovers.</p>
+          <button className="btn btn-info" type="button" onClick={signIn}>
+            Sign in
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
