@@ -7,34 +7,40 @@ import MessageCard from '../../components/cards/MessageCard';
 import { useAuth } from '../../utils/context/authContext';
 import MessageForm from '../../components/forms/MessageForm';
 import { getLatestMessages, getMessagesByListingId } from '../../api/messageData';
+import { getUserById } from '../../api/userData';
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
+  const [messageReceiver, setMessageReceiver] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
   const { user } = useAuth();
 
+  // Fetch the latest messages on load
   useEffect(() => {
     if (user?.id) {
       getLatestMessages(user.id).then(setMessages);
     }
   }, [user?.id]);
 
-  const fetchConversationMessages = (listingId) => {
+  // Fetch conversation messages and receiver data when a conversation is selected
+  const fetchConversationMessages = (listingId, receiverId) => {
     if (user?.id && listingId) {
       getMessagesByListingId(user.id, listingId).then(setConversationMessages);
+      getUserById(receiverId).then(setMessageReceiver); // Fetch receiver data
+      console.log(messageReceiver);
     }
   };
 
   const handleSelectConversation = (message) => {
-    const { listing } = message;
+    const { listing, receiverId } = message;
     setSelectedListing(listing);
-    fetchConversationMessages(listing.id);
+    fetchConversationMessages(listing.id, receiverId);
   };
 
   const handleUpdate = () => {
     if (selectedListing) {
-      fetchConversationMessages(selectedListing.id);
+      fetchConversationMessages(selectedListing.id, messageReceiver?.id);
       getLatestMessages(user.id).then(setMessages);
     }
   };
@@ -92,10 +98,10 @@ export default function MessagesPage() {
                     <div key={msg.id} className={`chat ${msg.senderId === user.id ? 'chat-end' : 'chat-start'} mt-4`}>
                       <div className="chat-image avatar">
                         <div className="w-10 rounded-full">
-                          <img alt="Profile" src={msg.senderId === user.id ? user.imageUrl : selectedListing.seller.imageUrl} />
+                          <img alt="Profile" src={msg.senderId === user.id ? user.imageUrl : messageReceiver?.imageUrl} />
                         </div>
                       </div>
-                      <div className="chat-header">{msg.senderId === user.id ? user.firstName : selectedListing.seller.firstName}</div>
+                      <div className="chat-header">{msg.senderId === user.id ? user.firstName : messageReceiver?.firstName}</div>
                       <div className="chat-bubble">{msg.content}</div>
                       <div className="chat-footer opacity-50">Sent at: {new Date(msg.sentAt).toLocaleString()}</div>
                     </div>
