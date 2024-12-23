@@ -3,32 +3,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import MessageCard from '../../components/cards/MessageCard';
-import { useAuth } from '../../utils/context/authContext';
-import MessageForm from '../../components/forms/MessageForm';
 import { getLatestMessages, getMessagesByListingId } from '../../api/messageData';
+import { useAuth } from '../../utils/context/authContext';
 import { getUserById } from '../../api/userData';
+import MessageCard from '../../components/cards/MessageCard';
+import MessageForm from '../../components/forms/MessageForm';
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
-  const [messageReceiver, setMessageReceiver] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
+  const [senders, setSenders] = useState({}); // Track all message senders
   const { user } = useAuth();
 
-  // Fetch the latest messages on load
   useEffect(() => {
     if (user?.id) {
       getLatestMessages(user.id).then(setMessages);
     }
   }, [user?.id]);
 
-  // Fetch conversation messages and receiver data when a conversation is selected
-  const fetchConversationMessages = (listingId, receiverId) => {
+  const fetchConversationMessages = (listingId) => {
     if (user?.id && listingId) {
-      getMessagesByListingId(user.id, listingId).then(setConversationMessages);
-      getUserById(receiverId).then(setMessageReceiver); // Fetch receiver data
-      console.log(messageReceiver);
+      getMessagesByListingId(user.id, listingId).then((msgs) => {
+        setConversationMessages(msgs);
+
+        // Fetch sender data for messages not from logged-in user
+        const senderIds = [...new Set(msgs.map((msg) => msg.senderId))];
+        senderIds.forEach((id) => {
+          if (id !== user.id && !senders[id]) {
+            getUserById(id).then((sender) => {
+              setSenders((prev) => ({ ...prev, [id]: sender }));
+            });
+          }
+        });
+      });
     }
   };
 
@@ -40,14 +48,13 @@ export default function MessagesPage() {
 
   const handleUpdate = () => {
     if (selectedListing) {
-      fetchConversationMessages(selectedListing.id, messageReceiver?.id);
+      fetchConversationMessages(selectedListing.id, selectedListing.seller.id);
       getLatestMessages(user.id).then(setMessages);
     }
   };
 
   return (
     <div className="flex gap-4 p-4">
-      {/* Sidebar with Message Cards */}
       <div className="w-1/3 overflow-y-auto h-screen">
         {messages.length > 0 ? (
           messages.map((message) => (
@@ -71,7 +78,6 @@ export default function MessagesPage() {
         )}
       </div>
 
-      {/* Main area showing conversation and message form */}
       <div className="w-3/4">
         {selectedListing ? (
           <div className="container mx-auto p-4">
@@ -79,7 +85,6 @@ export default function MessagesPage() {
               Send a message to {selectedListing.seller.firstName} {selectedListing.seller.lastName}
             </h1>
 
-            {/* Listing Data */}
             <div className="card bg-base-100 shadow-md p-4 mb-4">
               <div className="flex gap-4 items-center">
                 <img src={selectedListing.imageUrl} alt={selectedListing.name} className="w-20 h-20 object-cover rounded" />
@@ -90,33 +95,37 @@ export default function MessagesPage() {
               </div>
             </div>
 
-            {/* Conversation Messages */}
             <div className="mt-8">
               <ul>
                 {conversationMessages.length > 0 ? (
-                  conversationMessages.map((msg) => (
-                    <div key={msg.id} className={`chat ${msg.senderId === user.id ? 'chat-end' : 'chat-start'} mt-4`}>
-                      <div className="chat-image avatar">
-                        <div className="w-10 rounded-full">
-                          <img alt="Profile" src={msg.senderId === user.id ? user.imageUrl : messageReceiver?.imageUrl} />
+                  conversationMessages.map((msg) => {
+                    const sender = msg.senderId === user.id ? user : senders[msg.senderId] || {};
+                    return (
+                      <div key={msg.id} className={`chat ${msg.senderId === user.id ? 'chat-end' : 'chat-start'} mt-4`}>
+                        <div className="chat-image avatar">
+                          <div className="w-10 rounded-full">
+                            <img alt="Profile" src={sender.imageUrl} />
+                          </div>
                         </div>
+                        <div className="chat-header">{sender.firstName}</div>
+                        <div className="chat-bubble">{msg.content}</div>
+                        <div className="chat-footer opacity-50">Sent at: {new Date(msg.sentAt).toLocaleString()}</div>
                       </div>
-                      <div className="chat-header">{msg.senderId === user.id ? user.firstName : messageReceiver?.firstName}</div>
-                      <div className="chat-bubble">{msg.content}</div>
-                      <div className="chat-footer opacity-50">Sent at: {new Date(msg.sentAt).toLocaleString()}</div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <p>No messages yet.</p>
                 )}
               </ul>
             </div>
 
-            {/* Message Form */}
             <MessageForm
               message={{}}
               params={{
-                receiverId: selectedListing.seller.id,
+                receiverId:
+                  user.id === selectedListing.seller.id
+                    ? conversationMessages[0]?.senderId // Receiver is the first message's sender (buyer)
+                    : selectedListing.seller.id, // Receiver is the listing's seller
                 listingId: selectedListing.id,
               }}
               onUpdate={handleUpdate}
