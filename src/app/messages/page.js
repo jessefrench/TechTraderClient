@@ -13,7 +13,7 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
   const [selectedListing, setSelectedListing] = useState(null);
   const [conversationMessages, setConversationMessages] = useState([]);
-  const [senders, setSenders] = useState({}); // Track all message senders
+  const [senders, setSenders] = useState({});
   const { user } = useAuth();
 
   useEffect(() => {
@@ -26,8 +26,6 @@ export default function MessagesPage() {
     if (user?.id && listingId) {
       getMessagesByListingId(user.id, listingId).then((msgs) => {
         setConversationMessages(msgs);
-
-        // Fetch sender data for messages not from logged-in user
         const senderIds = [...new Set(msgs.map((msg) => msg.senderId))];
         senderIds.forEach((id) => {
           if (id !== user.id && !senders[id]) {
@@ -46,11 +44,18 @@ export default function MessagesPage() {
     fetchConversationMessages(listing.id, receiverId);
   };
 
-  const handleUpdate = () => {
-    if (selectedListing) {
-      fetchConversationMessages(selectedListing.id, selectedListing.seller.id);
-      getLatestMessages(user.id).then(setMessages);
+  const getRecipientName = () => {
+    if (user.id === selectedListing.seller.id) {
+      const senderId = conversationMessages[0]?.senderId;
+      const sender = senders[senderId];
+      return sender ? `${sender.firstName} ${sender.lastName}` : 'Unknown';
     }
+    return `${selectedListing.seller.firstName} ${selectedListing.seller.lastName}`;
+  };
+
+  const handleUpdate = (newMessage) => {
+    setConversationMessages((prevMessages) => [...prevMessages, newMessage]);
+    getLatestMessages(user.id).then(setMessages);
   };
 
   return (
@@ -70,7 +75,7 @@ export default function MessagesPage() {
                 }
               }}
             >
-              <MessageCard message={message} />
+              <MessageCard message={message} user={user} senders={senders} setSenders={setSenders} />
             </div>
           ))
         ) : (
@@ -81,9 +86,7 @@ export default function MessagesPage() {
       <div className="w-3/4">
         {selectedListing ? (
           <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">
-              Send a message to {selectedListing.seller.firstName} {selectedListing.seller.lastName}
-            </h1>
+            <h1 className="text-2xl font-bold mb-4">Send a message to {getRecipientName()}</h1>
 
             <div className="card bg-base-100 shadow-md p-4 mb-4">
               <div className="flex gap-4 items-center">
@@ -122,10 +125,7 @@ export default function MessagesPage() {
             <MessageForm
               message={{}}
               params={{
-                receiverId:
-                  user.id === selectedListing.seller.id
-                    ? conversationMessages[0]?.senderId // Receiver is the first message's sender (buyer)
-                    : selectedListing.seller.id, // Receiver is the listing's seller
+                receiverId: user.id === selectedListing.seller.id ? conversationMessages[0]?.senderId : selectedListing.seller.id,
                 listingId: selectedListing.id,
               }}
               onUpdate={handleUpdate}
