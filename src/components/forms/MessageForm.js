@@ -15,7 +15,6 @@ export default function MessageForm({ message, params, onUpdate }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     setFormInput((prevState) => ({
       ...prevState,
       [name]: value,
@@ -33,9 +32,13 @@ export default function MessageForm({ message, params, onUpdate }) {
     };
 
     if (message?.id) {
-      updateMessage(message.id, payload).then(() => onUpdate());
+      updateMessage(message.id, payload).then((updatedMessage) => {
+        onUpdate(updatedMessage);
+      });
     } else {
-      createMessage(payload).then(() => onUpdate());
+      createMessage(payload).then((newMessage) => {
+        onUpdate(newMessage);
+      });
     }
   };
 
