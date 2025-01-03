@@ -2,8 +2,11 @@
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { IoIosMore } from 'react-icons/io';
+import { FaBookmark } from 'react-icons/fa';
 import { useAuth } from '../../utils/context/authContext';
 import { deleteListing } from '../../api/listingData';
+import { addSavedListing } from '../../api/savedListingData';
 
 export default function ListingCard({ listing, onUpdate }) {
   const { user } = useAuth();
@@ -20,6 +23,22 @@ export default function ListingCard({ listing, onUpdate }) {
     }
   };
 
+  const handleSaveListing = () => {
+    const payload = {
+      listingId: listing.id,
+      userId: user.id,
+    };
+
+    addSavedListing(payload, listing.id, user.id)
+      .then(() => {
+        alert(`${listing.name} has been saved!`);
+      })
+      .catch((error) => {
+        console.error('Error saving listing:', error);
+        alert('Failed to save listing. Please try again.');
+      });
+  };
+
   return (
     <div className="card bg-base-100 w-85 shadow-xl">
       <figure>
@@ -34,10 +53,13 @@ export default function ListingCard({ listing, onUpdate }) {
           <div className="badge badge-outline">
             {listing.seller.city}, {listing.seller.state}
           </div>
+          <button type="button" className="btn btn-ghost btn-xs m-1" aria-label="Click to save" onClick={handleSaveListing}>
+            <FaBookmark />
+          </button>
           {isListingOwner && (
             <div className="dropdown dropdown-top dropdown-end ml-auto">
-              <div tabIndex={0} role="button" className="btn btn-secondary btn-xs m-1">
-                More
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-xs m-1" aria-label="Click for more">
+                <IoIosMore />
               </div>
               <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                 <li>
