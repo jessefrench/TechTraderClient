@@ -60,10 +60,10 @@ export default function NewMessagePage() {
               <div key={msg.id} className={`chat ${msg.senderId === user.id ? 'chat-end' : 'chat-start'} mt-4`}>
                 <div className="chat-image avatar">
                   <div className="w-10 rounded-full">
-                    <img alt="Profile" src={msg.senderId === user.id ? user.imageUrl : msg.listing.seller.imageUrl} />
+                    <img alt="Profile" src={msg.senderId === user.id ? user.imageUrl : listing.seller.imageUrl} />
                   </div>
                 </div>
-                <div className="chat-header">{msg.senderId === user.id ? user.firstName : msg.listing.seller.firstName}</div>
+                <div className="chat-header">{msg.senderId === user.id ? user.firstName : listing.seller.firstName}</div>
                 <div className="chat-bubble">{msg.content}</div>
                 <div className="chat-footer opacity-50">Sent at: {new Date(msg.sentAt).toLocaleString()}</div>
               </div>
