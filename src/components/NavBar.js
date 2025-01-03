@@ -4,6 +4,7 @@
 
 import { useAuth } from '@/utils/context/authContext';
 import Link from 'next/link';
+import { MdAddPhotoAlternate } from 'react-icons/md';
 import { signOut } from '../utils/auth';
 
 export default function NavBar() {
@@ -23,7 +24,9 @@ export default function NavBar() {
         </Link>
       </div>
       <Link passHref href="/listings/new">
-        <p className="btn btn-ghost text-xl">+ New Listing</p>
+        <p className="btn btn-ghost text-xl">
+          <MdAddPhotoAlternate /> New Listing
+        </p>
       </Link>
       <div className="flex-none gap-2">
         <div className="form-control">
