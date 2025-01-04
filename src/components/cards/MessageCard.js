@@ -21,7 +21,7 @@ export default function MessageCard({ message, user, senders, setSenders }) {
   };
 
   return (
-    <div className="card bg-primary text-primary-content w-96 shadow-xl mb-1">
+    <div className="card bg-neutral text-neutral-content w-96 shadow-xl mb-1">
       <div className="card-body">
         <h2 className="card-title">{getRecipientName()}</h2>
         <div className="badge badge-outline">{message.listing.name}</div>
