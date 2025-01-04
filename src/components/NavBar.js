@@ -4,7 +4,7 @@
 
 import { useAuth } from '@/utils/context/authContext';
 import Link from 'next/link';
-import { MdAddPhotoAlternate } from 'react-icons/md';
+import { FaArrowRightFromBracket, FaBookmark, FaComments, FaFileCirclePlus } from 'react-icons/fa6';
 import { signOut } from '../utils/auth';
 
 export default function NavBar() {
@@ -16,18 +16,7 @@ export default function NavBar() {
         <Link passHref href="/">
           <p className="btn btn-ghost text-xl">TechTrader</p>
         </Link>
-        <Link passHref href="/">
-          <p className="btn btn-ghost text-xl">Listings</p>
-        </Link>
-        <Link passHref href="/messages">
-          <p className="btn btn-ghost text-xl">Messages</p>
-        </Link>
       </div>
-      <Link passHref href="/listings/new">
-        <p className="btn btn-ghost text-xl">
-          <MdAddPhotoAlternate /> New Listing
-        </p>
-      </Link>
       <div className="flex-none gap-2">
         <div className="form-control">
           <input type="text" placeholder="Search" className="input input-bordered w-24 md:w-auto" />
@@ -40,13 +29,29 @@ export default function NavBar() {
           </div>
           <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
             <li>
-              <Link passHref href="/profile">
-                <p className="justify-between">Profile</p>
+              <Link passHref href="/messages">
+                <p className="flex items-center gap-2">
+                  <FaComments /> Messages
+                </p>
+              </Link>
+            </li>
+            <li>
+              <Link passHref href="/listings/new">
+                <p className="flex items-center gap-2">
+                  <FaFileCirclePlus /> Create listing
+                </p>
+              </Link>
+            </li>
+            <li>
+              <Link passHref href="/listings/saved">
+                <p className="flex items-center gap-2">
+                  <FaBookmark /> Saved listings
+                </p>
               </Link>
             </li>
             <li>
               <button type="button" onClick={signOut}>
-                Logout
+                <FaArrowRightFromBracket /> Logout
               </button>
             </li>
           </ul>
