@@ -1,4 +1,4 @@
-<h1 align="center" style="font-weight: bold;">TechTrader</h1>
+<h1 align="center" style="font-weight: bold;">TechTrader Client</h1>
 
 <p align="center">
 <a href="#layout">Layout</a> | 
@@ -6,14 +6,14 @@
 <a href="#getting-started">Getting Started</a> | 
 <a href="#links">Additional Project Links</a>
 </p>
+<br>
 
 <p align="center">
-
-This is the client-side repo for the full-stack app TechTrader — a tech marketplace app. Check out the server-side repo [here](https://github.com/jessefrench/TechTraderAPI).
-
+This is the client-side repo for the full-stack app TechTrader — a tech marketplace app that enables users to browse, filter, and manage listings for sale, save favorites,
+and message other users.
+<br><br>
+<a href="https://github.com/jessefrench/TechTraderAPI">➡️ Go to server-side repo</a>
 </p>
-
-<p align="center">
 
 <h2 id="layout">🎨 Layout</h2>
 
