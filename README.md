@@ -1,61 +1,46 @@
-# NextJS with Firebase Auth App Router Template
+<h1 align="center" style="font-weight: bold;">TechTrader</h1>
 
-[See Live Demo of this Template](https://drt-next-js-template-app-router.netlify.app/)
+<p align="center">
+<a href="#layout">Layout</a> | 
+<a href="#technologies">Technologies</a> | 
+<a href="#getting-started">Getting Started</a> | 
+<a href="#links">Additional Project Links</a>
+</p>
 
-## Topics
-- [Get Started](#get-started)
-- [Starting the Project](#starting-the-project)
-- [Deploying on Netlify](#deploying-on-netlify)
-___
-## Getting Started
-### Use Template
-#### 1. To get started, click the GREEN "Use this Template" button at the top of the repo
-<img width="915" alt="Screen Shot 2022-07-06 at 12 54 01 PM" src="https://user-images.githubusercontent.com/29741570/177612998-4aac9237-5a1e-4f13-8ae0-468587521564.png">
+<p align="center">
 
-#### 2. Make sure YOUR github account is selected in the dropdown and name your project
-<img width="763" alt="Screen Shot 2022-07-06 at 12 54 48 PM" src="https://user-images.githubusercontent.com/29741570/177613126-dd38f678-7553-4f27-8a4a-75680f14d71e.png">
+This is the client-side repo for the full-stack app TechTrader — a tech marketplace app. Check out the server-side repo [here](https://github.com/jessefrench/TechTraderAPI).
 
-#### 3. Clone your new repo to your local machine
-#### 4. Go to the **NEXT** section
+</p>
 
-## Starting the Project
-1. Create a Firebase project and set up authentication. Use [these videos](https://vimeo.com/showcase/codetracker-firebase) as a refresher if needed.
-1. Create a `.env` file at the root of the project
-1. Copy/Paste the contents of the `.env.sample` file to your newly created `.env` file.
-1. Copy over all of your Firebase values into the `.env` file.
-1. Open the `package.json` file and change the `name` property to the name of your application, and `author` to  your name.
-1. From your command line, be in the root directory and run `npm install` OR `npm i` for short.
-1. Next, run `npm run prepare`. This command sets up husky to track eslint errors on commit that will make your deploy fail on Netlify.
-1. Run `npx eslint . --ext .js,.jsx`
-1. To start your application, run `npm run dev`. THIS IS THE COMMAND YOU WILL USE TO RUN YOUR DEVELOPMENT SERVER FROM NOW ON.
-1. Open [http://localhost:3000](http://localhost:3000) with your browser.
+<p align="center">
 
-### If you see this, you are set to go!
-<img width="450" alt="Screen Shot 2022-07-06 at 1 07 27 PM" src="https://github.com/user-attachments/assets/deae25f0-01d5-44b4-be60-7297b0f6f0ef">
+<h2 id="layout">🎨 Layout</h2>
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+![Screenshot 2025-01-06 155940](https://github.com/user-attachments/assets/43d41c53-94cf-454f-83d6-844682e41693)
+![Screenshot 2025-01-06 155723](https://github.com/user-attachments/assets/83736048-c6a2-4b5c-a8b6-7d1b03a49617)
+![Screenshot 2025-01-06 160137](https://github.com/user-attachments/assets/0782a836-4b1b-402e-83a6-991cb6ce2368)
 
-**NOTES:** 
-- If you see the following error, you did not follow all the setup steps correctly and failed to add your Firebase creds. Go back and do that NOW.
+<h2 id="technologies">💻 Technologies</h2>
 
-<img width="1043" alt="Screen Shot 2022-07-06 at 11 18 45 AM" src="https://user-images.githubusercontent.com/29741570/177612501-c2628f18-4bbd-4de9-aae6-27ffba1172d6.png">
+- React
+- Next.js
+- Tailwind CSS
+- daisyUI
 
-### Deploying on Netlify
-Netlify will automatically detect your project and prepopulate the settings, but should something go wrong and it does not, here are the commands:
+<h2 id="getting-started">🚀 Getting Started</h2>
 
-- Build Command: `npm run build`
-- Publish directory: `.next`
+1. Clone this repo: `git clone https://github.com/jessefrench/TechTraderClient.git`.
+2. In the root directory, run `npm install`.
+3. Next, run `npm run prepare`. This command sets up Husky to track ESLint errors on commit.
+4. Run `npx eslint . --ext .js,.jsx`.
+5. To start your application, run `npm run dev`.
+6. Open `http://localhost:3000` with your browser.
 
-#### Additional Steps to Take on Netlify
-- Add Environmental Variables
-    - Any Enviromental variables you are using in your `.env` file should be added to Netlify. 
-        - Go to Site settings > Build & deploy > Environment > Environment variables and the keys and values there if you did not add them when you were deploying your site
+<h2 id="links">🔗 Additional Project Links</h2>
 
-- Update Firebase URL Settings
-    - In Firebase under Authentication select sign in methods, scroll to Authorized domains. Add your Netlify URL.
-        
-## Learn More about Next.js
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- [Project board](https://github.com/users/jessefrench/projects/6/views/1)
+- [Frontend wireframe](https://www.figma.com/design/dnXNNcrtKGU1yyD63IfcTv/Tech-Trader-Wireframe?node-id=0-1&t=Qne7gCatYCAMntuQ-1)
+- [ERD](https://dbdiagram.io/d/Tech-Trader-6733af0ae9daa85aca375e54)
+- [Backend repo](https://github.com/jessefrench/TechTraderAPI)
+- [API Postman docs](https://documenter.getpostman.com/view/33562650/2sAYBViBzx)
