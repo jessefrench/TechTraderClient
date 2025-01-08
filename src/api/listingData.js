@@ -68,4 +68,17 @@ const deleteListing = (listingId) =>
       .catch(reject);
   });
 
-export { getAllListings, getListingById, createListing, updateListing, deleteListing };
+const searchListings = (searchValue) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings/search?searchValue=${searchValue}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
+export { getAllListings, getListingById, createListing, updateListing, deleteListing, searchListings };
