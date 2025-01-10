@@ -2,9 +2,11 @@
 import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import Loading from './Loading';
+import { useAuth } from '../utils/context/authContext';
 
 export default function ListingDetails({ listing }) {
   const router = useRouter();
+  const { user } = useAuth();
 
   if (!listing.condition || !listing.category || !listing.seller) {
     return <Loading />;
@@ -14,6 +16,8 @@ export default function ListingDetails({ listing }) {
     const listingData = encodeURIComponent(JSON.stringify(listing));
     router.push(`/messages/new?receiverId=${listing.seller.id}&listingData=${listingData}`);
   };
+
+  const isSeller = user?.id === listing.seller.id;
 
   return (
     <div className="card lg:card-side bg-base-100 shadow-xl">
@@ -35,9 +39,11 @@ export default function ListingDetails({ listing }) {
         </div>
         <p>{listing.description}</p>
         <div className="card-actions">
-          <button type="button" className="btn btn-primary" onClick={handleMessageSeller}>
-            Message Seller
-          </button>
+          {!isSeller && (
+            <button type="button" className="btn btn-primary" onClick={handleMessageSeller}>
+              Message Seller
+            </button>
+          )}
         </div>
       </div>
     </div>

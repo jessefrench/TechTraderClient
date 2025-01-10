@@ -17,11 +17,15 @@ export default function Home() {
     localOnly: false,
   });
 
-  useEffect(() => {
+  const fetchListings = () => {
     getAllListings().then((data) => {
       setListings(data);
       setFilteredListings(data);
     });
+  };
+
+  useEffect(() => {
+    fetchListings();
     setCurrentUserCity(user.city);
   }, [user.city]);
 
@@ -47,7 +51,7 @@ export default function Home() {
       <div className="w-5/6 p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredListings.map((listing) => (
-            <ListingCard key={listing.id} listing={listing} />
+            <ListingCard key={listing.id} listing={listing} onUpdate={fetchListings} />
           ))}
         </div>
       </div>
