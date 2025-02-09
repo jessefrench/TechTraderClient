@@ -4,7 +4,7 @@
 
 import { useAuth } from '@/utils/context/authContext';
 import Link from 'next/link';
-import { FaArrowRightFromBracket, FaBookmark, FaComments, FaFileCirclePlus } from 'react-icons/fa6';
+import { FaArrowRightFromBracket, FaBookmark, FaCircleUser, FaComments, FaFileCirclePlus } from 'react-icons/fa6';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from '../utils/auth';
@@ -65,6 +65,13 @@ export default function NavBar() {
               <Link passHref href="/listings/saved">
                 <p className="flex items-center gap-2">
                   <FaBookmark /> Saved listings
+                </p>
+              </Link>
+            </li>
+            <li>
+              <Link passHref href="/listings/my-listings">
+                <p className="flex items-center gap-2">
+                  <FaCircleUser /> My listings
                 </p>
               </Link>
             </li>

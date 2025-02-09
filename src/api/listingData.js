@@ -28,6 +28,19 @@ const getListingById = (id) =>
       .catch(reject);
   });
 
+const getListingBySellerId = (sellerId) =>
+  new Promise((resolve, reject) => {
+    fetch(`${endpoint}/listings/sellers/${sellerId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => resolve(data))
+      .catch(reject);
+  });
+
 const createListing = (payload) =>
   new Promise((resolve, reject) => {
     fetch(`${endpoint}/listings`, {
@@ -81,4 +94,4 @@ const searchListings = (searchValue) =>
       .catch(reject);
   });
 
-export { getAllListings, getListingById, createListing, updateListing, deleteListing, searchListings };
+export { getAllListings, getListingById, getListingBySellerId, createListing, updateListing, deleteListing, searchListings };
