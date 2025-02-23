@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 
 'use client';
 
 import { useEffect, useState } from 'react';
+import * as signalR from '@microsoft/signalr';
 import { getLatestMessages, getMessagesByListingId } from '../../api/messageData';
 import { useAuth } from '../../utils/context/authContext';
 import { getUserById } from '../../api/userData';
@@ -15,6 +17,7 @@ export default function MessagesPage() {
   const [conversationMessages, setConversationMessages] = useState([]);
   const [senders, setSenders] = useState({});
   const { user } = useAuth();
+  const [connection, setConnection] = useState(null);
 
   useEffect(() => {
     if (user?.id) {
@@ -26,6 +29,7 @@ export default function MessagesPage() {
     if (user?.id && listingId) {
       getMessagesByListingId(user.id, listingId).then((msgs) => {
         setConversationMessages(msgs);
+
         const senderIds = [...new Set(msgs.map((msg) => msg.senderId))];
         senderIds.forEach((id) => {
           if (id !== user.id && !senders[id]) {
@@ -39,17 +43,20 @@ export default function MessagesPage() {
   };
 
   const handleSelectConversation = (message) => {
-    const { listing, receiverId } = message;
+    const { listing } = message;
     setSelectedListing(listing);
-    fetchConversationMessages(listing.id, receiverId);
+    fetchConversationMessages(listing.id);
   };
 
   const getRecipientName = () => {
+    if (!selectedListing || !selectedListing.seller) return 'Unknown';
+
     if (user.id === selectedListing.seller.id) {
-      const senderId = conversationMessages[0]?.senderId;
-      const sender = senders[senderId];
+      const senderId = conversationMessages.length > 0 ? conversationMessages[0].senderId : null;
+      const sender = senderId ? senders[senderId] : null;
       return sender ? `${sender.firstName} ${sender.lastName}` : 'Unknown';
     }
+
     return `${selectedListing.seller.firstName} ${selectedListing.seller.lastName}`;
   };
 
@@ -57,6 +64,46 @@ export default function MessagesPage() {
     setConversationMessages((prevMessages) => [...prevMessages, newMessage]);
     getLatestMessages(user.id).then(setMessages);
   };
+
+  useEffect(() => {
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl('https://localhost:7103/messageHub', {
+        withCredentials: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    setConnection(newConnection);
+
+    newConnection
+      .start()
+      .then(() => {
+        console.log('Connected to SignalR');
+        newConnection.invoke('RegisterUser', user.id);
+      })
+      .catch((error) => console.error('Connection failed:', error));
+
+    return () => {
+      newConnection.stop();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (connection) {
+      connection.off('ReceiveMessage');
+      connection.on('ReceiveMessage', (message) => {
+        setConversationMessages((prevMessages) => [...prevMessages, message]);
+        getLatestMessages(user.id).then(setMessages);
+      });
+    }
+
+    return () => {
+      if (connection) {
+        connection.off('ReceiveMessage');
+      }
+    };
+  }, [connection]);
 
   return (
     <div className="flex gap-4 p-4">
