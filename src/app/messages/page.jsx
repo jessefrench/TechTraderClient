@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
 
 'use client';
@@ -10,6 +9,7 @@ import { useAuth } from '../../utils/context/authContext';
 import { getUserById } from '../../api/userData';
 import MessageCard from '../../components/cards/MessageCard';
 import MessageForm from '../../components/forms/MessageForm';
+import { clientCredentials } from '../../utils/client';
 
 export default function MessagesPage() {
   const [messages, setMessages] = useState([]);
@@ -19,26 +19,26 @@ export default function MessagesPage() {
   const { user } = useAuth();
   const [connection, setConnection] = useState(null);
 
+  // Fetch latest messages for the user
   useEffect(() => {
     if (user?.id) {
       getLatestMessages(user.id).then(setMessages);
     }
   }, [user?.id]);
 
-  const fetchConversationMessages = (listingId) => {
+  const fetchConversationMessages = async (listingId) => {
     if (user?.id && listingId) {
-      getMessagesByListingId(user.id, listingId).then((msgs) => {
-        setConversationMessages(msgs);
+      const msgs = await getMessagesByListingId(user.id, listingId);
+      setConversationMessages(msgs);
 
-        const senderIds = [...new Set(msgs.map((msg) => msg.senderId))];
-        senderIds.forEach((id) => {
-          if (id !== user.id && !senders[id]) {
-            getUserById(id).then((sender) => {
-              setSenders((prev) => ({ ...prev, [id]: sender }));
-            });
-          }
-        });
-      });
+      const senderIds = [...new Set(msgs.map((msg) => msg.senderId))].filter((id) => id !== user.id && !senders[id]);
+
+      if (senderIds.length > 0) {
+        const senderPromises = senderIds.map((id) => getUserById(id));
+        const senderData = await Promise.all(senderPromises);
+        const senderMap = senderData.reduce((acc, sender) => ({ ...acc, [sender.id]: sender }), {});
+        setSenders((prev) => ({ ...prev, ...senderMap }));
+      }
     }
   };
 
@@ -52,29 +52,28 @@ export default function MessagesPage() {
     if (!selectedListing || !selectedListing.seller) return 'Unknown';
 
     if (user.id === selectedListing.seller.id) {
-      const senderId = conversationMessages.length > 0 ? conversationMessages[0].senderId : null;
-      const sender = senderId ? senders[senderId] : null;
-      return sender ? `${sender.firstName} ${sender.lastName}` : 'Unknown';
+      const senderId = conversationMessages[0]?.senderId;
+      return senderId ? `${senders[senderId]?.firstName} ${senders[senderId]?.lastName}` : 'Unknown';
     }
 
     return `${selectedListing.seller.firstName} ${selectedListing.seller.lastName}`;
   };
 
   const handleUpdate = (newMessage) => {
-    setConversationMessages((prevMessages) => [...prevMessages, newMessage]);
+    setConversationMessages((prev) => [...prev, newMessage]);
     getLatestMessages(user.id).then(setMessages);
   };
 
+  // Set up SignalR connection
   useEffect(() => {
+    const endpoint = clientCredentials.databaseURL;
     const newConnection = new signalR.HubConnectionBuilder()
-      .withUrl('https://localhost:7103/messageHub', {
+      .withUrl(`${endpoint}/messageHub`, {
         withCredentials: true,
         transport: signalR.HttpTransportType.WebSockets,
       })
       .withAutomaticReconnect()
       .build();
-
-    setConnection(newConnection);
 
     newConnection
       .start()
@@ -84,26 +83,28 @@ export default function MessagesPage() {
       })
       .catch((error) => console.error('Connection failed:', error));
 
+    setConnection(newConnection);
+
     return () => {
       newConnection.stop();
     };
-  }, []);
+  }, [user.id]);
 
+  // Listen for incoming messages
   useEffect(() => {
-    if (connection) {
-      connection.off('ReceiveMessage');
-      connection.on('ReceiveMessage', (message) => {
-        setConversationMessages((prevMessages) => [...prevMessages, message]);
-        getLatestMessages(user.id).then(setMessages);
-      });
-    }
+    if (!connection) return undefined;
+
+    const handleReceiveMessage = (message) => {
+      setConversationMessages((prev) => [...prev, message]);
+      getLatestMessages(user.id).then(setMessages);
+    };
+
+    connection.on('ReceiveMessage', handleReceiveMessage);
 
     return () => {
-      if (connection) {
-        connection.off('ReceiveMessage');
-      }
+      connection.off('ReceiveMessage', handleReceiveMessage);
     };
-  }, [connection]);
+  }, [user.id, connection]);
 
   return (
     <div className="flex gap-4 p-4">
@@ -130,6 +131,7 @@ export default function MessagesPage() {
         )}
       </div>
 
+      {/* Listing Data */}
       <div className="w-3/4">
         {selectedListing ? (
           <div className="container mx-auto p-4">
@@ -145,6 +147,7 @@ export default function MessagesPage() {
               </div>
             </div>
 
+            {/* Messages */}
             <div className="mt-8">
               <ul>
                 {conversationMessages.length > 0 ? (

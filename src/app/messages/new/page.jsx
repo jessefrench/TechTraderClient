@@ -5,9 +5,11 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import * as signalR from '@microsoft/signalr';
 import { useAuth } from '../../../utils/context/authContext';
 import MessageForm from '../../../components/forms/MessageForm';
 import { getMessagesByListingId } from '../../../api/messageData';
+import { clientCredentials } from '../../../utils/client';
 
 export default function NewMessagePage() {
   const searchParams = useSearchParams();
@@ -17,6 +19,7 @@ export default function NewMessagePage() {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [selectedMessage, setSelectedMessage] = useState({});
+  const [connection, setConnection] = useState(null);
 
   const fetchMessages = () => {
     if (user?.id && listing?.id) {
@@ -27,6 +30,47 @@ export default function NewMessagePage() {
   useEffect(() => {
     fetchMessages();
   }, [user?.id, listing?.id]);
+
+  // Set up SignalR connection
+  useEffect(() => {
+    const endpoint = clientCredentials.databaseURL;
+    const newConnection = new signalR.HubConnectionBuilder()
+      .withUrl(`${endpoint}/messageHub`, {
+        withCredentials: true,
+        transport: signalR.HttpTransportType.WebSockets,
+      })
+      .withAutomaticReconnect()
+      .build();
+
+    newConnection
+      .start()
+      .then(() => {
+        console.log('Connected to SignalR');
+        newConnection.invoke('RegisterUser', user.id);
+      })
+      .catch((error) => console.error('SignalR Connection Failed:', error));
+
+    setConnection(newConnection);
+
+    return () => {
+      newConnection.stop();
+    };
+  }, [user?.id]);
+
+  // Listen for incoming messages
+  useEffect(() => {
+    if (!connection) return undefined;
+
+    const handleReceiveMessage = (message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+
+    connection.on('ReceiveMessage', handleReceiveMessage);
+
+    return () => {
+      connection.off('ReceiveMessage', handleReceiveMessage);
+    };
+  }, [connection]);
 
   const handleUpdate = () => {
     fetchMessages();
